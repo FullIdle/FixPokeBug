@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.github.fullidle.boredplugin.fifix.Main'
-version = '1.1-SNAPSHOT'
+version = '1.2'
 
 repositories {
     mavenLocal()
