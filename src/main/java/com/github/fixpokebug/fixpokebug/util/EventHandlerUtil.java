@@ -5,11 +5,18 @@ import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
+import com.pixelmonmod.pixelmon.battles.controller.participants.WildPixelmonParticipant;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
+import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.player.PlayerEvent;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 import static com.github.fixpokebug.fixpokebug.Main.main;
 
@@ -55,6 +62,9 @@ public class EventHandlerUtil {
         }
     }
     public static class BattleStartedEvent{
+        private static final ArrayList<EntityPixelmon> alreadyInBattleEntity = new ArrayList<>();
+        private static final ArrayList<UUID> alreadyInBattleUUID = new ArrayList<>();
+
         public static void noSkillBattleErrorTriggers(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
             for (BattleParticipant bp : e.bc.participants) {
                 for (PixelmonWrapper pw : bp.allPokemon) {
@@ -65,6 +75,42 @@ public class EventHandlerUtil {
                     }
                 }
             }
+        }
+        public static void samePokeBattleErrorTrigger(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
+            BattleControllerBase bc = e.bc;
+            if (bc.playerNumber < 1)return;
+            for (BattleParticipant participant : bc.participants) {
+                if (!(participant instanceof WildPixelmonParticipant)) {
+                    continue;
+                }
+                WildPixelmonParticipant wild = (WildPixelmonParticipant) participant;
+                if (wild.getEntity() == null) {
+                    bc.endBattle(EnumBattleEndCause.FORCE);
+                }
+            }
+        }
+    }
+    public static class PlayerMoveEvent{
+        public static void unableToMoveDuringBattle(org.bukkit.event.player.PlayerMoveEvent e){
+            interceptAllMoveInBattle(e);
+        }
+    }
+
+
+    private static void interceptAllMoveInBattle(PlayerEvent event){
+        if (!(event instanceof Cancellable)){return;}
+        Player player = event.getPlayer();
+        EntityPlayer ep = PlayerUtil.getEntityPlayer(player);
+        BattleControllerBase bc = BattleRegistry.getBattle(ep);
+        if (bc == null){return;}
+        String unmovable = main.getConfig().getString("Unmovable").replace("&", "§");
+        player.sendMessage(unmovable);
+        ((Cancellable) event).setCancelled(true);
+    }
+
+    public static class PlayerTeleportEvent {
+        public static void unableToTeleportDuringBattle(org.bukkit.event.player.PlayerTeleportEvent e) {
+            interceptAllMoveInBattle(e);
         }
     }
 }

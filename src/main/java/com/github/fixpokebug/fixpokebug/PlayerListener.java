@@ -6,6 +6,8 @@ import com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent;
 import me.fullidle.ficore.ficore.common.api.event.ForgeEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerListener implements Listener {
     @EventHandler
@@ -19,6 +21,15 @@ public class PlayerListener implements Listener {
             BattleStartedEvent e = (BattleStartedEvent) event.getForgeEvent();
             /*无技能对战错误触发*/
             EventHandlerUtil.BattleStartedEvent.noSkillBattleErrorTriggers(e);
+            EventHandlerUtil.BattleStartedEvent.samePokeBattleErrorTrigger(e);
         }
+    }
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent e){
+        EventHandlerUtil.PlayerMoveEvent.unableToMoveDuringBattle(e);
+    }
+    @EventHandler
+    public void onPlayerTp(PlayerTeleportEvent e){
+        EventHandlerUtil.PlayerTeleportEvent.unableToTeleportDuringBattle(e);
     }
 }
