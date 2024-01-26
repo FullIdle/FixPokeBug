@@ -1,4 +1,4 @@
-name: FIFix
+name: ${rootProject.name}
 main: ${group}
 version: ${version}
 description: 一些修复

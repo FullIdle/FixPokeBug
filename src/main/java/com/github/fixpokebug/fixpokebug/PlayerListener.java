@@ -1,9 +1,8 @@
-package com.github.fullidle.boredplugin.fifix;
+package com.github.fixpokebug.fixpokebug;
 
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.events.BattleStartedEvent;
 import com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent;
-import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.battles.BattleRegistry;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
@@ -19,7 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import static com.github.fullidle.boredplugin.fifix.Main.main;
+import static com.github.fixpokebug.fixpokebug.Main.main;
 
 public class PlayerListener implements Listener {
     @EventHandler
