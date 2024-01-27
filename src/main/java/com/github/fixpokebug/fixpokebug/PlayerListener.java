@@ -16,13 +16,13 @@ public class PlayerListener implements Listener {
             PokeballImpactEvent e = (PokeballImpactEvent) event.getForgeEvent();
             /*多玩家同时球丢错误触发对战*/
             EventHandlerUtil.PokeballImpactEvent.multiPlayerBattleErrorTrigger(e);
+            /*拦截具有相同 Uuid 的匹配(实体的uuid和宝可梦数据的uuid都判断)*/
+            EventHandlerUtil.PokeballImpactEvent.interceptMatchesWithTheSameUuid(e);
         }
         if (event.getForgeEvent() instanceof BattleStartedEvent){
             BattleStartedEvent e = (BattleStartedEvent) event.getForgeEvent();
             /*无技能对战错误触发*/
             EventHandlerUtil.BattleStartedEvent.noSkillBattleErrorTriggers(e);
-            /*拦截具有相同 Uuid 的匹配(实体的uuid和宝可梦数据的uuid都判断)*/
-            EventHandlerUtil.BattleStartedEvent.interceptMatchesWithTheSameUuid(e);
         }
         if (event.getForgeEvent() instanceof BattleEndEvent){
             BattleEndEvent e = (BattleEndEvent) event.getForgeEvent();
