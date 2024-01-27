@@ -22,10 +22,16 @@ public class EventHandlerUtil {
     public static class PokeballImpactEvent{
         public static final ArrayList<UUID> compareUUIDs = new ArrayList<>();
         public static boolean isNotEmptyRBall(com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent e){
-            if (e.isEmptyBall || (e.getEntityHit()) == null || !(e.getEntityHit() instanceof EntityPixelmon)) {
+            if (e.isEmptyBall || (e.getEntityHit()) == null) {
                 return false;
             }
-            return e.pokeball.field_70192_c instanceof EntityPlayer|| !((EntityPixelmon) e.getEntityHit()).hasOwner();
+            if (!(e.getEntityHit() instanceof EntityPixelmon)){
+                return false;
+            }
+            if (((EntityPixelmon) e.getEntityHit()).hasOwner()) {
+                return false;
+            }
+            return e.pokeball.field_70192_c instanceof EntityPlayer;
         }
         public static void interceptMatchesWithTheSameUuid(com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent e){
             if (!isNotEmptyRBall(e)) {return;}
