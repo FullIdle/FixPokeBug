@@ -3,6 +3,7 @@ package com.github.fixpokebug.fixpokebug;
 import com.github.fixpokebug.fixpokebug.util.EventHandlerUtil;
 import com.pixelmonmod.pixelmon.api.events.BattleStartedEvent;
 import com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent;
+import com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent;
 import me.fullidle.ficore.ficore.common.api.event.ForgeEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +23,11 @@ public class PlayerListener implements Listener {
             EventHandlerUtil.BattleStartedEvent.noSkillBattleErrorTriggers(e);
             /*拦截具有相同 Uuid 的匹配(实体的uuid和宝可梦数据的uuid都判断)*/
             EventHandlerUtil.BattleStartedEvent.interceptMatchesWithTheSameUuid(e);
+        }
+        if (event.getForgeEvent() instanceof BattleEndEvent){
+            BattleEndEvent e = (BattleEndEvent) event.getForgeEvent();
+            /*拦截具有相同 Uuid 的匹配(实体的uuid和宝可梦数据的uuid都判断)-->需要和对战开始配合使用的*/
+            EventHandlerUtil.BattleEndEvent.interceptMatchesWithTheSameUuid(e);
         }
     }
     @EventHandler

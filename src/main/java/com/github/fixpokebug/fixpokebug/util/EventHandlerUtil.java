@@ -60,6 +60,27 @@ public class EventHandlerUtil {
             });
         }
     }
+    public static class BattleEndEvent{
+
+        public static void interceptMatchesWithTheSameUuid(com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent e) {
+            BattleControllerBase bc = e.bc;
+            /*只对玩家对战有用*/
+            if (bc.getPlayers().isEmpty()) {
+                return;
+            }
+            for (BattleParticipant par : bc.participants) {
+                if (!(par instanceof WildPixelmonParticipant)) {
+                    continue;
+                }
+                WildPixelmonParticipant wpp = (WildPixelmonParticipant) par;
+                EntityPixelmon entity = ((EntityPixelmon) wpp.getEntity());
+                UUID uuid = EntityUtil.getUUID(entity);
+                UUID uuid1 = entity.getPokemonData().getUUID();
+                BattleStartedEvent.compareUUID.remove(uuid);
+                BattleStartedEvent.compareUUID.remove(uuid1);
+            }
+        }
+    }
     public static class BattleStartedEvent{
         public static final ArrayList<UUID> compareUUID = new ArrayList<>();
         public static void noSkillBattleErrorTriggers(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
@@ -96,6 +117,8 @@ public class EventHandlerUtil {
                     PlayerUtil.getBukkitPlayer(player.player).sendMessage(MsgUtil.getMsg(MsgUtil.thatPokemonIsAlreadyFighting));
                 }
                 e.setCanceled(true);
+                compareUUID.add(uuid);
+                compareUUID.add(uuid1);
             }
         }
     }
