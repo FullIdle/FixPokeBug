@@ -29,15 +29,13 @@ public class EventHandlerUtil {
             Player p = PlayerUtil.getBukkitPlayer(((EntityPlayer) e.pokeball.field_70192_c));
             EntityPixelmon ep = (EntityPixelmon) e.getEntityHit();
             assert ep != null;
-            UUID uuid = EntityUtil.getUUID(ep);
-            UUID uuid1 = ep.getPokemonData().getUUID();
-            if (compareUUIDs.contains(uuid) || compareUUIDs.contains(uuid1)) {
+            UUID uuid = ep.getPokemonData().getUUID();
+            if (compareUUIDs.contains(uuid)) {
                 e.setCanceled(true);
                 p.sendMessage(MsgUtil.getMsg(MsgUtil.thatPokemonIsAlreadyFighting));
                 return;
             }
             compareUUIDs.add(uuid);
-            compareUUIDs.add(uuid1);
         }
         public static void multiPlayerBattleErrorTrigger(com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent e){
             /*判断是否是空球，也就是球有没有精灵,R和右键出去的区别*/
@@ -90,10 +88,8 @@ public class EventHandlerUtil {
                 }
                 WildPixelmonParticipant wpp = (WildPixelmonParticipant) par;
                 EntityPixelmon entity = ((EntityPixelmon) wpp.getEntity());
-                UUID uuid = EntityUtil.getUUID(entity);
-                UUID uuid1 = entity.getPokemonData().getUUID();
+                UUID uuid = entity.getPokemonData().getUUID();
                 PokeballImpactEvent.compareUUIDs.remove(uuid);
-                PokeballImpactEvent.compareUUIDs.remove(uuid1);
             }
         }
     }
