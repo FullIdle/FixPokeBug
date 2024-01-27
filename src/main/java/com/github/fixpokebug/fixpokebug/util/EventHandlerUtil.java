@@ -26,6 +26,7 @@ public class EventHandlerUtil {
             return (e.pokeball.field_70192_c instanceof EntityPlayer);
         }
         public static void interceptMatchesWithTheSameUuid(com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent e){
+            if (!isNotEmptyRBall(e)) {return;}
             Player p = PlayerUtil.getBukkitPlayer(((EntityPlayer) e.pokeball.field_70192_c));
             EntityPixelmon ep = (EntityPixelmon) e.getEntityHit();
             assert ep != null;
