@@ -7,7 +7,6 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.WildPixelmonParticipant;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.battle.EnumBattleEndCause;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import org.bukkit.Bukkit;
@@ -54,7 +53,7 @@ public class EventHandlerUtil {
                 if (!par.player.getBukkitEntity().getUniqueId().equals(p.getUniqueId())) {return;}
                 for (PixelmonWrapper wrapper : par.getOpponentPokemon()) {
                     if (wrapper.pokemon.getUUID().equals(ep.getBukkitEntity().getUniqueId())) {
-                        p.sendMessage(main.getConfig().getString("ThatPokemonIsAlreadyFighting").replace("&","§"));
+                        p.sendMessage(MsgUtil.getMsg(MsgUtil.thatPokemonIsAlreadyFighting));
                         battle.endBattle();
                     }
                 }
@@ -62,40 +61,44 @@ public class EventHandlerUtil {
         }
     }
     public static class BattleStartedEvent{
-        private static final ArrayList<EntityPixelmon> alreadyInBattleEntity = new ArrayList<>();
-        private static final ArrayList<UUID> alreadyInBattleUUID = new ArrayList<>();
-
+        public static final ArrayList<UUID> compareUUID = new ArrayList<>();
         public static void noSkillBattleErrorTriggers(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
             for (BattleParticipant bp : e.bc.participants) {
                 for (PixelmonWrapper pw : bp.allPokemon) {
                     if (pw.getMoveset().isEmpty()) {
                         pw.pokemon.rerollMoveset();
                         pw.setTemporaryMoveset(pw.pokemon.getMoveset());
-                        Bukkit.getPlayer(pw.getPlayerOwner().func_110124_au()).sendMessage(main.getConfig().getString("SkillIsEmpty").replace("&","§"));
+                        PlayerUtil.getBukkitPlayer(pw.getPlayerOwner())
+                                .sendMessage(MsgUtil.getMsg(MsgUtil.skillIsEmpty));
                     }
                 }
             }
         }
-        public static void samePokeBattleErrorTrigger(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
+        public static void interceptMatchesWithTheSameUuid(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
             BattleControllerBase bc = e.bc;
-            if (bc.playerNumber < 1)return;
-            for (BattleParticipant participant : bc.participants) {
-                if (!(participant instanceof WildPixelmonParticipant)) {
+            /*只对玩家对战有用*/
+            if (bc.getPlayers().isEmpty()) {
+                return;
+            }
+            for (BattleParticipant par : bc.participants) {
+                if (!(par instanceof WildPixelmonParticipant)) {
                     continue;
                 }
-                WildPixelmonParticipant wild = (WildPixelmonParticipant) participant;
-                if (wild.getEntity() == null) {
-                    bc.endBattle(EnumBattleEndCause.FORCE);
+                /*判断*/
+                WildPixelmonParticipant wpp = (WildPixelmonParticipant) par;
+                UUID uuid = EntityUtil.getUUID(wpp.getEntity());
+                UUID uuid1 = ((EntityPixelmon) wpp.getEntity()).getPokemonData().getUUID();
+                if (!(compareUUID.contains(uuid)||compareUUID.contains(uuid1))){
+                    continue;
                 }
+                /*提示*/
+                for (PlayerParticipant player : bc.getPlayers()) {
+                    PlayerUtil.getBukkitPlayer(player.player).sendMessage(MsgUtil.getMsg(MsgUtil.thatPokemonIsAlreadyFighting));
+                }
+                e.setCanceled(true);
             }
         }
     }
-    public static class PlayerMoveEvent{
-        public static void unableToMoveDuringBattle(org.bukkit.event.player.PlayerMoveEvent e){
-            interceptAllMoveInBattle(e);
-        }
-    }
-
 
     private static void interceptAllMoveInBattle(PlayerEvent event){
         if (!(event instanceof Cancellable)){return;}
@@ -103,8 +106,7 @@ public class EventHandlerUtil {
         EntityPlayer ep = PlayerUtil.getEntityPlayer(player);
         BattleControllerBase bc = BattleRegistry.getBattle(ep);
         if (bc == null){return;}
-        String unmovable = main.getConfig().getString("Unmovable").replace("&", "§");
-        player.sendMessage(unmovable);
+        player.sendMessage(MsgUtil.getMsg(MsgUtil.unmovable));
         ((Cancellable) event).setCancelled(true);
     }
 

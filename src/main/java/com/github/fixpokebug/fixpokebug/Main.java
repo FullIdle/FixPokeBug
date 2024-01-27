@@ -1,5 +1,6 @@
 package com.github.fixpokebug.fixpokebug;
 
+import com.github.fixpokebug.fixpokebug.util.MsgUtil;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
@@ -15,5 +16,6 @@ public class Main extends JavaPlugin {
     public void reloadConfig() {
         main.saveDefaultConfig();
         super.reloadConfig();
+        MsgUtil.init();
     }
 }

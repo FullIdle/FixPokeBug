@@ -6,7 +6,6 @@ import com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent;
 import me.fullidle.ficore.ficore.common.api.event.ForgeEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerListener implements Listener {
@@ -21,15 +20,13 @@ public class PlayerListener implements Listener {
             BattleStartedEvent e = (BattleStartedEvent) event.getForgeEvent();
             /*无技能对战错误触发*/
             EventHandlerUtil.BattleStartedEvent.noSkillBattleErrorTriggers(e);
-            EventHandlerUtil.BattleStartedEvent.samePokeBattleErrorTrigger(e);
+            /*拦截具有相同 Uuid 的匹配(实体的uuid和宝可梦数据的uuid都判断)*/
+            EventHandlerUtil.BattleStartedEvent.interceptMatchesWithTheSameUuid(e);
         }
     }
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e){
-        EventHandlerUtil.PlayerMoveEvent.unableToMoveDuringBattle(e);
-    }
-    @EventHandler
     public void onPlayerTp(PlayerTeleportEvent e){
+        /*玩家不可在对战中传送*/
         EventHandlerUtil.PlayerTeleportEvent.unableToTeleportDuringBattle(e);
     }
 }
