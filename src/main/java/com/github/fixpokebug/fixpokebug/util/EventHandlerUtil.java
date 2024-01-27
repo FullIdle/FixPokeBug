@@ -42,9 +42,7 @@ public class EventHandlerUtil {
             if (compareUUIDs.contains(uuid)) {
                 e.setCanceled(true);
                 p.sendMessage(MsgUtil.getMsg(MsgUtil.thatPokemonIsAlreadyFighting));
-                return;
             }
-            compareUUIDs.add(uuid);
         }
         public static void multiPlayerBattleErrorTrigger(com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent e){
             /*判断是否是空球，也就是球有没有精灵,R和右键出去的区别*/
@@ -103,6 +101,17 @@ public class EventHandlerUtil {
         }
     }
     public static class BattleStartedEvent{
+        public static void interceptMatchesWithTheSameUuid(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
+            for (BattleParticipant par : e.bc.participants) {
+                if (!(par instanceof WildPixelmonParticipant)) {
+                    continue;
+                }
+                WildPixelmonParticipant wpp = (WildPixelmonParticipant) par;
+                EntityPixelmon ep = (EntityPixelmon) wpp.getEntity();
+                UUID uuid = ep.getPokemonData().getUUID();
+                PokeballImpactEvent.compareUUIDs.add(uuid);
+            }
+        }
         public static void noSkillBattleErrorTriggers(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
             for (BattleParticipant bp : e.bc.participants) {
                 for (PixelmonWrapper pw : bp.allPokemon) {
