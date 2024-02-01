@@ -22,7 +22,7 @@ public class EventHandlerUtil {
     public static class PokeballImpactEvent{
         public static final ArrayList<UUID> compareUUIDs = new ArrayList<>();
         public static boolean isNotEmptyRBall(com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent e){
-            if (e.isEmptyBall || (e.getEntityHit()) == null) {
+            if ((e.getEntityHit()) == null) {
                 return false;
             }
             if (!(e.getEntityHit() instanceof EntityPixelmon)){
@@ -45,6 +45,7 @@ public class EventHandlerUtil {
             }
         }
         public static void multiPlayerBattleErrorTrigger(com.pixelmonmod.pixelmon.api.events.PokeballImpactEvent e){
+            if (e.isEmptyBall) return;
             /*判断是否是空球，也就是球有没有精灵,R和右键出去的区别*/
             /*判断是否砸中生物,且属于宝可梦*/
             if (!isNotEmptyRBall(e)){return;}
@@ -89,6 +90,7 @@ public class EventHandlerUtil {
             if (bc.getPlayers().isEmpty()) {
                 return;
             }
+            ArrayList<UUID> uuids = new ArrayList<>();
             for (BattleParticipant par : bc.participants) {
                 if (!(par instanceof WildPixelmonParticipant)) {
                     continue;
@@ -96,12 +98,16 @@ public class EventHandlerUtil {
                 WildPixelmonParticipant wpp = (WildPixelmonParticipant) par;
                 EntityPixelmon entity = ((EntityPixelmon) wpp.getEntity());
                 UUID uuid = entity.getPokemonData().getUUID();
-                PokeballImpactEvent.compareUUIDs.remove(uuid);
+                uuids.add(uuid);
             }
+            Bukkit.getScheduler().runTask(main,()->{
+                PokeballImpactEvent.compareUUIDs.removeAll(uuids);
+            });
         }
     }
     public static class BattleStartedEvent{
         public static void interceptMatchesWithTheSameUuid(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
+            ArrayList<UUID> uuids = new ArrayList<>();
             for (BattleParticipant par : e.bc.participants) {
                 if (!(par instanceof WildPixelmonParticipant)) {
                     continue;
@@ -109,8 +115,11 @@ public class EventHandlerUtil {
                 WildPixelmonParticipant wpp = (WildPixelmonParticipant) par;
                 EntityPixelmon ep = (EntityPixelmon) wpp.getEntity();
                 UUID uuid = ep.getPokemonData().getUUID();
-                PokeballImpactEvent.compareUUIDs.add(uuid);
+                uuids.add(uuid);
             }
+            Bukkit.getScheduler().runTask(main,()->{
+                PokeballImpactEvent.compareUUIDs.addAll(uuids);
+            });
         }
         public static void noSkillBattleErrorTriggers(com.pixelmonmod.pixelmon.api.events.BattleStartedEvent e){
             for (BattleParticipant bp : e.bc.participants) {
