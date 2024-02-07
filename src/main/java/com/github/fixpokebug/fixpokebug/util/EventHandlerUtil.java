@@ -86,10 +86,6 @@ public class EventHandlerUtil {
     public static class BattleEndEvent{
         public static void interceptMatchesWithTheSameUuid(com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent e) {
             BattleControllerBase bc = e.bc;
-            /*只对玩家对战有用*/
-            if (bc.getPlayers().isEmpty()) {
-                return;
-            }
             ArrayList<UUID> uuids = new ArrayList<>();
             for (BattleParticipant par : bc.participants) {
                 if (!(par instanceof WildPixelmonParticipant)) {
